@@ -1,0 +1,414 @@
+openapi: 3.0.0
+
+tags:
+  - name: Posts
+  - name: Users
+  - name: Geolocations
+
+info:
+  title: Social Network API
+  version: 1.0.0
+
+paths:
+  /posts:
+    post:
+      summary: Create a new post
+      tags:
+        - Posts
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                  format: int64
+                  description: ID of the user creating the post
+                postText:
+                  type: string
+                  description: Content of the post
+                photos:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Array of up to 10 image files
+                  maxItems: 10
+              required:
+                - userId
+                - postText
+      responses:
+        '200':
+          description: Post created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  postId:
+                    type: string
+                    description: ID of the newly created post
+        '400':
+          description: Bad Request
+        '413':
+          description: Too many images were uploaded
+        '500':
+          description: Internal Server Error
+
+  /posts/feed/{userId}:
+    get:
+      summary: Get personalized feed for a user
+      tags:
+        - Posts
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: ID of the user
+      responses:
+        '200':
+          description: Successful retrieval of posts from subscribers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    postId:
+                      type: integer
+                      format: int64
+                      description: ID of the post
+                    postText:
+                      type: string
+                      description: Content of the post
+                    timestamp:
+                      type: string
+                      format: date-time
+                      description: Timestamp of the post
+                    images:
+                      type: array
+                      items:
+                        type: string
+                        format: byte
+                        description: Base64 encoded blob of an image
+                    comments:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          commentId:
+                            type: integer
+                            format: int64
+                            description: ID of the comment
+                          userId:
+                            type: integer
+                            format: int64
+                            description: ID of the user who commented
+                          commentText:
+                            type: string
+                            description: Text of the comment
+                          timestamp:
+                            type: string
+                            format: date-time
+                            description: Timestamp of the comment
+                    likes:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: ID of the user who liked the post
+                  required:
+                    - postId
+                    - postText
+                    - timestamp
+                    - images
+                    - comments
+                    - likes
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+
+  /posts/feed/geolocation/{geolocationId}:
+    get:
+      summary: Get posts from a geolocation
+      tags:
+        - Posts
+      parameters:
+        - in: path
+          name: geolocationId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: ID of the geolocation
+      responses:
+        '200':
+          description: Successful retrieval of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    postId:
+                      type: integer
+                      format: int64
+                      description: ID of the post
+                    postText:
+                      type: string
+                      description: Content of the post
+                    timestamp:
+                      type: string
+                      format: date-time
+                      description: Timestamp of the post
+                    images:
+                      type: array
+                      items:
+                        type: string
+                        format: byte
+                        description: Base64 encoded blob of an image
+                    comments:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          commentId:
+                            type: integer
+                            format: int64
+                            description: ID of the comment
+                          userId:
+                            type: integer
+                            format: int64
+                            description: ID of the user who commented
+                          commentText:
+                            type: string
+                            description: Text of the comment
+                          timestamp:
+                            type: string
+                            format: date-time
+                            description: Timestamp of the comment
+                    likes:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: ID of the user who liked the post
+                  required:
+                    - postId
+                    - postText
+                    - timestamp
+                    - images
+                    - comments
+                    - likes
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+
+  /posts/{postId}/comments:
+    post:
+      summary: Add a comment to a post
+      tags:
+        - Posts
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: ID of the post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                  format: int64
+                  description: ID of the user commenting
+                commentText:
+                  type: string
+                  description: Text of the comment
+              required:
+                - userId
+                - commentText
+      responses:
+        '200':
+          description: Comment added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  commentId:
+                    type: integer
+                    format: int64
+                    description: The ID of the newly created comment
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+
+  /posts/{postId}/like:
+    post:
+      summary: Like a post
+      tags:
+        - Posts
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: ID of the post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                  format: int64
+                  description: ID of the user liking
+              required:
+                - userId
+      responses:
+        '200':
+          description: Post liked successfully
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+
+  /posts/{postId}/unlike:
+    post:
+      summary: Unlike a post
+      tags:
+        - Posts
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: ID of the post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                  format: int64
+                  description: ID of the user unliking
+              required:
+                - userId
+      responses:
+        '200':
+          description: Post unliked successfully
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+
+  /users/{fromUserId}/subscribe/{toUserId}:
+    post:
+      summary: Subscribe to a user
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: fromUserId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: ID of the user subscribing
+        - in: path
+          name: toUserId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: ID of the user to subscribe to
+      responses:
+        '200':
+          description: Subscribed successfully
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+
+  /users/{fromUserId}/unsubscribe/{toUserId}:
+    post:
+      summary: Unsubscribe from a user
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: fromUserId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: ID of the user unsubscribing
+        - in: path
+          name: toUserId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: ID of the user to unsubscribe from
+      responses:
+        '200':
+          description: Unsubscribed successfully
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+
+  /geolocations/popular:
+    get:
+      summary: Search popular geolocations
+      tags:
+        - Geolocations
+      responses:
+        '200':
+          description: Successful retrieval of popular geolocations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+                  format: int64
+                  description: ID of geolocation
+        '500':
+          description: Internal Server Error
