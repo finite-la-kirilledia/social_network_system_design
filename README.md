@@ -41,24 +41,24 @@
 ---
 
 ## RPS
-#### Posts
+### Posts
 * READ: 10 posts/day * 10M DAU / 86400 seconds/day = 1200 RPS
 * WRITE: 1 post/week * 10M DAU / 7 days/week / 86400 seconds/day = 17 RPS
 
-#### Comments
+### Comments
 * READ: 10 comments/day * 10M DAU / 86400 = 1200 RPS
 * WRITE: 2 comments/week * 10M DAU / 7 days/week / 86400 seconds/day = 33 RPS
 
-#### Subscriptions
+### Subscriptions
 * WRITE: 1 time/day * 10M DAU / 86400 seconds/day = 116 RPS
 
-#### Likes
+### Likes
 * WRITE: 5 posts/day * 10M DAU / 86400 seconds/day = 580 RPS
 
 ---
 
 ## Traffic
-#### Posts
+### Posts
 
 | Post property | Size            | 
 |---------------|-----------------|
@@ -79,7 +79,7 @@
 * READ (Media): 1200 RPS * 3 MB = 3600 MB/s
 * WRITE (Media): 17 RPS * 3 MB = 51 MB/s
 
-#### Comments
+### Comments
 
 | Comment property | Size      | 
 |------------------|-----------|
@@ -91,7 +91,7 @@
 * READ: 1200 RPS * 279 B = 335 KB/s
 * WRITE: 33 RPS * 279 B = 9 KB/s
 
-#### Subscriptions
+### Subscriptions
 
 | Subscription property | Size    | 
 |-----------------------|---------|
@@ -100,7 +100,7 @@
 
 * WRITE: 116 RPS * 16 B = 1.9 KB/s
 
-#### Likes
+### Likes
 
 | Like property | Size    | 
 |---------------|---------|
@@ -113,3 +113,139 @@
 
 ## Connections
 * 10M DAU * 0.1 = 1M
+
+---
+
+## Disks evaluation for 1 year
+
+### Posts
+
+#### Meta
+
+* capacity = 5 KB/s * 86400 seconds/day * 365 days/year = 157680000 KB = 158 GB
+* traffic_per_second = 335 KB/s + 5 KB/s = 340 KB/s
+* iops = 1200 RPS + 17 RPS = 1217 RPS
+
+HDD
+* Disks_for_capacity = capacity / disk_capacity = 158 GB / 500 GB = 1 disk
+* Disks_for_throughput = traffic_per_second / disk_throughput = 340 KB/s / 100 MB/s = 1 disk
+* Disks_for_iops = iops / disk_iops = 1217 / 100 = 13 disks
+* Disks = max(1, 1, 13) = 13 disks
+
+SSD (SATA)
+* Disks_for_capacity = capacity / disk_capacity = 158 GB / 500 GB = 1 disk
+* Disks_for_throughput = traffic_per_second / disk_throughput = 340 KB/s / 500 MB/s = 1 disk 
+* Disks_for_iops = iops / disk_iops = 1217 / 1000 = 2 disks
+* Disks = max(1, 1, 2) = 2 disks
+
+SSD (nVME)
+* Disks_for_capacity = capacity / disk_capacity = 158 GB / 500 GB = 1 disk
+* Disks_for_throughput = traffic_per_second / disk_throughput = 340 KB/s / 3 GB/s = 1 disk
+* Disks_for_iops = iops / disk_iops = 1217 / 10k = 1 disk
+* Disks = max(1, 1, 1) = 1 disk
+
+_Decision: will take 2 SSD (SATA) disks by 500 GB_ 
+
+#### Media
+
+* capacity = 51 MB/s * 86400 seconds/day * 365 days/year = 1.6e9 MB = 1.6 PB
+* traffic_per_second = 335 KB/s + 5 KB/s = 340 KB/s
+* iops = 1200 RPS + 17 RPS = 1217 RPS
+
+HDD
+* Disks_for_capacity = capacity / disk_capacity = 1.6 PB / 32 TB = 60 disks
+* Disks_for_throughput = traffic_per_second / disk_throughput = 340 KB/s / 100 MB/s = 1 disk
+* Disks_for_iops = iops / disk_iops = 1217 / 100 = 13 disks
+* Disks = max(50, 1, 13) = 50 disks
+
+SSD (SATA)
+* Disks_for_capacity = capacity / disk_capacity = 1.6 PB / 100 TB = 20 disks 
+* Disks_for_throughput = traffic_per_second / disk_throughput = 340 KB/s / 500 MB/s = 1 disk
+* Disks_for_iops = iops / disk_iops = 1217 / 1000 = 2 disks
+* Disks = max(16, 1, 2) = 16 disks
+
+SSD (nVME)
+* Disks_for_capacity = capacity / disk_capacity = 1.6 PB / 30 TB = 60 disks
+* Disks_for_throughput = traffic_per_second / disk_throughput = 340 KB/s / 3 GB/s = 1 disk
+* Disks_for_iops = iops / disk_iops = 1217 / 10k = 1 disk
+* Disks = max(54, 1, 1) = 54 disks
+
+_Decision: will take 20 SSD (SATA) disks by 100 TB_
+
+### Comments
+
+* capacity = 9 KB/s * 86400 seconds/day * 365 days/year = 2.9e8 KB = 290 GB
+* traffic_per_second = 335 KB/s + 9 KB/s = 344 KB/s
+* iops = 1200 RPS + 33 RPS = 1233 RPS
+
+HDD
+* Disks_for_capacity = capacity / disk_capacity = 290 GB / 500 GB = 1 disk
+* Disks_for_throughput = traffic_per_second / disk_throughput = 344 KB/s / 100 MB/s = 1 disk
+* Disks_for_iops = iops / disk_iops = 1233 / 100 = 13 disks
+* Disks = max(1, 1, 13) = 13 disks
+
+SSD (SATA)
+* Disks_for_capacity = capacity / disk_capacity = 290 GB / 500 GB = 1 disk
+* Disks_for_throughput = traffic_per_second / disk_throughput = 344 KB/s / 500 MB/s = 1 disk
+* Disks_for_iops = iops / disk_iops = 1233 / 1000 = 2 disks
+* Disks = max(1, 1, 2) = 2 disks
+
+SSD (nVME)
+* Disks_for_capacity = capacity / disk_capacity = 290 GB / 500 GB = 1 disk
+* Disks_for_throughput = traffic_per_second / disk_throughput = 344 KB/s / 3 GB/s = 1 disk
+* Disks_for_iops = iops / disk_iops = 1233 / 10k = 1 disk
+* Disks = max(1, 1, 1) = 1 disk
+
+_Decision: will take 2 SSD (SATA) disks by 500 GB_
+
+### Subscriptions
+
+* capacity = 1.9 KB/s * 86400 seconds/day * 365 days/year = 6e7 KB = 60 GB
+* traffic_per_second = 1.9 KB/s
+* iops = 116 RPS
+
+HDD
+* Disks_for_capacity = capacity / disk_capacity = 60 GB / 500 GB = 1 disk
+* Disks_for_throughput = traffic_per_second / disk_throughput = 1.9 KB/s / 100 MB/s = 1 disk
+* Disks_for_iops = iops / disk_iops = 116 / 100 = 2 disks
+* Disks = max(1, 1, 2) = 2 disks
+
+SSD (SATA)
+* Disks_for_capacity = capacity / disk_capacity = 60 GB / 500 GB = 1 disk
+* Disks_for_throughput = traffic_per_second / disk_throughput = 1.9 KB/s / 500 MB/s = 1 disk
+* Disks_for_iops = iops / disk_iops = 116 / 1000 = 1 disk
+* Disks = max(1, 1, 1) = 1 disk
+
+SSD (nVME)
+* Disks_for_capacity = capacity / disk_capacity = 60 GB / 500 GB = 1 disk
+* Disks_for_throughput = traffic_per_second / disk_throughput = 1.9 KB/s / 3 GB/s = 1 disk
+* Disks_for_iops = iops / disk_iops = 116 / 10k = 1 disk
+* Disks = max(1, 1, 1) = 1 disk
+
+_Decision: will take 1 SSD (SATA) disk with 500 GB_
+
+### Likes
+
+* capacity = 9.3 KB/s * 86400 seconds/day * 365 days/year = 2.9e8 KB = 290 GB
+* traffic_per_second = 9.3 KB/s
+* iops = 580 RPS
+
+HDD
+* Disks_for_capacity = capacity / disk_capacity = 290 GB / 500 GB = 1 disk
+* Disks_for_throughput = traffic_per_second / disk_throughput = 9.3 KB/s / 100 MB/s = 1 disk
+* Disks_for_iops = iops / disk_iops = 580 / 100 = 6 disks
+* Disks = max(1, 1, 6) = 6 disks
+
+SSD (SATA)
+* Disks_for_capacity = capacity / disk_capacity = 290 GB / 500 GB = 1 disk
+* Disks_for_throughput = traffic_per_second / disk_throughput = 9.3 KB/s / 500 MB/s = 1 disk
+* Disks_for_iops = iops / disk_iops = 580 / 1000 = 1 disk
+* Disks = max(1, 1, 1) = 1 disk
+
+SSD (nVME)
+* Disks_for_capacity = capacity / disk_capacity = 290 GB / 500 GB = 1 disk
+* Disks_for_throughput = traffic_per_second / disk_throughput = 9.3 KB/s / 3 GB/s = 1 disk
+* Disks_for_iops = iops / disk_iops = 580 / 10k = 1 disk
+* Disks = max(1, 1, 1) = 1 disk
+
+_Decision: will take 1 SSD (SATA) disk with 500 GB_
