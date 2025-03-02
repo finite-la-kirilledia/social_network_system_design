@@ -107,6 +107,14 @@ paths:
           description: ID of the user
 
         - in: query
+          name: geolocationId
+          schema:
+            type: integer
+            format: int64
+          required: false
+          description: ID of the geolocation to filter posts
+
+        - in: query
           name: page
           schema:
             type: integer
@@ -135,62 +143,54 @@ paths:
                 items:
                   type: object
                   properties:
-                    totalPosts:
+                    postId:
                       type: integer
-                      description: Total number of posts available
-                    totalPages:
-                      type: integer
-                      description: Total number of pages
-                    currentPage:
-                      type: integer
-                      description: Current page number
-                    posts:
+                      format: int64
+                      description: ID of the post
+                    postText:
+                      type: string
+                      description: Content of the post
+                    timestamp:
+                      type: string
+                      format: date-time
+                      description: Timestamp of the post
+                    photoUrls:
+                      type: array
+                      items:
+                        type: string
+                    comments:
                       type: array
                       items:
                         type: object
                         properties:
-                          postId:
+                          commentId:
                             type: integer
                             format: int64
-                            description: ID of the post
-                          postText:
+                            description: ID of the comment
+                          userId:
+                            type: integer
+                            format: int64
+                            description: ID of the user who commented
+                          commentText:
                             type: string
-                            description: Content of the post
+                            description: Text of the comment
                           timestamp:
                             type: string
                             format: date-time
-                            description: Timestamp of the post
-                          photoUrls:
-                            type: array
-                            items:
-                              type: string
-                              format: string
-                          comments:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                commentId:
-                                  type: integer
-                                  format: int64
-                                  description: ID of the comment
-                                userId:
-                                  type: integer
-                                  format: int64
-                                  description: ID of the user who commented
-                                commentText:
-                                  type: string
-                                  description: Text of the comment
-                                timestamp:
-                                  type: string
-                                  format: date-time
-                                  description: Timestamp of the comment
-                          likes:
-                            type: array
-                            items:
-                              type: integer
-                              format: int64
-                              description: ID of the user who liked the post
+                            description: Timestamp of the comment
+                    likes:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: ID of the user who liked the post
+                  required:
+                    - postId
+                    - postText
+                    - timestamp
+                    - photoUrls
+                    - comments
+                    - likes
         '400':
           description: Bad Request
         '404':
@@ -463,113 +463,5 @@ paths:
                   type: integer
                   format: int64
                   description: ID of geolocation
-        '500':
-          description: Internal Server Error
-
-  /geolocations/{geolocationId}/posts:
-    get:
-      summary: Get posts from geolocation
-      tags:
-        - Geolocations
-      parameters:
-        - in: path
-          name: geolocationId
-          schema:
-            type: integer
-            format: int64
-          required: true
-          description: ID of geolocation
-        - in: query
-          name: page
-          schema:
-            type: integer
-            format: int32
-            default: 1
-          description: Page number for pagination
-        - in: query
-          name: size
-          schema:
-            type: integer
-            format: int32
-            default: 10
-          description: Number of posts per page
-      responses:
-        '200':
-          description: Successful retrieval of posts
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  totalPages:
-                    type: integer
-                    format: int32
-                    description: Total number of pages available
-                  totalPosts:
-                    type: integer
-                    format: int64
-                    description: Total number of posts available
-                  currentPage:
-                    type: integer
-                    format: int32
-                    description: The current page number
-                  posts:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        postId:
-                          type: integer
-                          format: int64
-                          description: ID of the post
-                        postText:
-                          type: string
-                          description: Content of the post
-                        timestamp:
-                          type: string
-                          format: date-time
-                          description: Timestamp of the post
-                        photoUrls:
-                          type: array
-                          items:
-                            type: string
-                            format: uri
-                            description: URL of the post's image
-                        comments:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              commentId:
-                                type: integer
-                                format: int64
-                                description: ID of the comment
-                              userId:
-                                type: integer
-                                format: int64
-                                description: ID of the user who commented
-                              commentText:
-                                type: string
-                                description: Text of the comment
-                              timestamp:
-                                type: string
-                                format: date-time
-                                description: Timestamp of the comment
-                        likes:
-                          type: array
-                          items:
-                            type: integer
-                            format: int64
-                      required:
-                        - postId
-                        - postText
-                        - timestamp
-                        - photoUrls
-                        - comments
-                        - likes
-        '400':
-          description: Bad Request
-        '404':
-          description: Not Found
         '500':
           description: Internal Server Error
