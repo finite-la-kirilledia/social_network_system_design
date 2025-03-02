@@ -156,21 +156,23 @@ HDD
 * Disks_for_capacity = capacity / disk_capacity = 1.6 PB / 32 TB = 60 disks
 * Disks_for_throughput = traffic_per_second / disk_throughput = 340 KB/s / 100 MB/s = 1 disk
 * Disks_for_iops = iops / disk_iops = 1217 / 100 = 13 disks
-* Disks = max(50, 1, 13) = 50 disks
+* Disks = max(60, 1, 13) = 60 disks
 
 SSD (SATA)
 * Disks_for_capacity = capacity / disk_capacity = 1.6 PB / 100 TB = 20 disks 
 * Disks_for_throughput = traffic_per_second / disk_throughput = 340 KB/s / 500 MB/s = 1 disk
 * Disks_for_iops = iops / disk_iops = 1217 / 1000 = 2 disks
-* Disks = max(16, 1, 2) = 16 disks
+* Disks = max(20, 1, 2) = 20 disks
 
 SSD (nVME)
 * Disks_for_capacity = capacity / disk_capacity = 1.6 PB / 30 TB = 60 disks
 * Disks_for_throughput = traffic_per_second / disk_throughput = 340 KB/s / 3 GB/s = 1 disk
 * Disks_for_iops = iops / disk_iops = 1217 / 10k = 1 disk
-* Disks = max(54, 1, 1) = 54 disks
+* Disks = max(60, 1, 1) = 60 disks
 
-_Decision: will take 20 SSD (SATA) disks by 100 TB_
+_Decision:
+for 30% of data (hot data) will take 6 SSD (DATA) disks by 100 TB.
+For 70% of data (cold data) will take 42 HDD by 32 TB_
 
 ### Comments
 

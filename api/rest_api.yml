@@ -200,7 +200,7 @@ paths:
 
   /comments:
     post:
-      summary: Add a comment to a post
+      summary: Add a comment or reply to a post
       tags:
         - Comments
       requestBody:
@@ -220,6 +220,11 @@ paths:
                 commentText:
                   type: string
                   description: Text of the comment
+                replyCommentId:
+                  type: integer
+                  format: int64
+                  nullable: true
+                  description: ID of the parent comment (if this is a reply)
               required:
                 - postId
                 - userId
@@ -244,7 +249,7 @@ paths:
           description: Internal Server Error
 
     get:
-      summary: Get comments for a post
+      summary: Get comments for a post (including replies)
       tags:
         - Comments
       parameters:
@@ -312,12 +317,26 @@ paths:
                           type: string
                           format: date-time
                           description: Timestamp of the comment
-        '400':
-          description: Bad Request
-        '404':
-          description: Not Found
-        '500':
-          description: Internal Server Error
+                        replies:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              commentId:
+                                type: integer
+                                format: int64
+                                description: ID of the reply comment
+                              userId:
+                                type: integer
+                                format: int64
+                                description: ID of the user who replied
+                              commentText:
+                                type: string
+                                description: Text of the reply
+                              timestamp:
+                                type: string
+                                format: date-time
+                                description: Timestamp of the reply
 
   /likes:
     post:

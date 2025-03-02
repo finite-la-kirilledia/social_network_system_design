@@ -16,6 +16,8 @@ Table comments {
     id serial [primary key]
     post_id bigint [not null, ref: > posts.id]
     user_id bigint [not null, ref: > users.id]
+    comment_text string
+    reply_comment_id bigint [ref: > comments.id]
     created_at timestamp
 }
 
