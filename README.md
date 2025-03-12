@@ -184,7 +184,7 @@ Decision:
 for 30% of data (hot data) will take 6 SSD (DATA) disks by 100 TB
 
 Replication: 3 RF, master-slave, async
-Sharding: Data will be sharded by userId across 6 hosts (shards) 
+Sharding: Data will be spreaded uniformly across 6 hosts 
 
 Hosts: 6 disks / 1 disk per host = 6 hosts
 Hosts_with_replication: 6 hosts * 3 RF = 18 hosts
@@ -194,7 +194,7 @@ Hosts_with_replication: 6 hosts * 3 RF = 18 hosts
 for 70% of data (cold data) will take 42 HDD by 32 TB
 
 Replication: 3 RF, master-slave, async
-Sharding: Data will be sharded by userId across 21 hosts (shards)
+Sharding: Data will be spreaded uniformly across 21 hosts
 
 Hosts: 42 disks / 2 disk per host = 21 hosts
 Hosts_with_replication = 21 hosts * 3 RF = 63 hosts 
@@ -228,7 +228,7 @@ SSD (nVME)
 Decision: will take 2 SSD (SATA) disks by 500 GB
 
 Replication: 3 RF, master-slave, async
-Sharding: Data will be sharded by userId across 2 hosts (shards)
+Sharding: Data will be sharded by postId across 2 hosts (shards)
 
 Hosts: 2 disks / 1 disk per host = 2 hosts
 Hosts_with_replication = 2 hosts * 3 RF = 6 hosts
