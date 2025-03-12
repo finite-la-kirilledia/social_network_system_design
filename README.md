@@ -40,12 +40,22 @@
 
 ---
 
+## Architecture
+
+<img src="architecture/highLevelDesign/high-level-design.png" alt="High-level design"/>
+<img src="architecture/servicesInteraction/services-interaction.png"  alt="Design of services interaction"/>
+
+---
+
 ## RPS
+
 ### Posts
+
 * READ: 10 posts/day * 10M DAU / 86400 seconds/day = 1200 RPS
 * WRITE: 1 post/week * 10M DAU / 7 days/week / 86400 seconds/day = 17 RPS
 
 ### Comments
+
 * READ: 10 comments/day * 10M DAU / 86400 = 1200 RPS
 * WRITE: 2 comments/week * 10M DAU / 7 days/week / 86400 seconds/day = 33 RPS
 
