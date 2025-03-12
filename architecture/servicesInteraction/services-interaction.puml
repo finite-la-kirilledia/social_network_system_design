@@ -1,0 +1,34 @@
+@startuml
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include <C4/C4_Context>
+
+System_Boundary(postsSystem, "Posts System") {
+    Container(postsService, "Posts Service", "Java Spring Boot app", "Manages posts creation and retrieval")
+    ContainerDb(postsDb, "Posts DB", "Postgres", "Stores posts metadata")
+    Rel(postsService, postsDb, "")
+}
+
+System_Boundary(likesSystem, "Likes System") {
+    Container(likesService, "Likes Service", "Java Spring Boot app", "Manages like/unlike actions and provides likes data for posts")
+    ContainerDb(likesDb, "Likes DB", "Postgres", "Stores likes data")
+    Rel(likesService, likesDb, "")
+}
+
+System_Boundary(subscriptionsSystem, "Subscriptions System") {
+    Container(subscriptionsService, "Subscriptions Service", "Java Spring Boot app", "Manages user subscriptions and provides subscription data for posts")
+    ContainerDb(subscriptionsDb, "Subscriptions DB", "Postgres", "Stores subscriptions data")
+    Rel(subscriptionsService, subscriptionsDb, "")
+}
+
+System_Boundary(commentsSystem, "Comments System") {
+    Container(commentsService, "Comments Service", "Java Spring Boot app", "Manages comment creation, retrieval, and deletion, and provides comment data for posts")
+    ContainerDb(commentsDb, "Comments DB", "Postgres", "Stores comments data")
+    Rel(commentsService, commentsDb, "")
+}
+
+Rel(postsService, likesService, "Gets likes data for posts", "REST")
+Rel(postsService, subscriptionsService, "Gets subscription data for posts", "REST")
+Rel(postsService, commentsService, "Gets comments data for posts", "REST")
+
+@enduml

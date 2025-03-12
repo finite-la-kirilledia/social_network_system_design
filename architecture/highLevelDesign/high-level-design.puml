@@ -1,0 +1,25 @@
+@startuml
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include <C4/C4_Context>
+
+Person(client, "Client")
+
+Container(loadBalancer, "Load Balancer", "Nginx", "Distributes traffic across backend services")
+Container(cdn, "CDN")
+ContainerDb(s3, "Images store", "AWS S3", "Stores post images")
+
+Container(postsSystem, "Posts System", "", "Manages posts creation and retrieval")
+Container(subscriptionsSystem, "Subscriptions System", "", "Manages user subscriptions and provides subscription data for posts")
+Container(likesSystem, "Likes System", "", "Manages like/unlike actions and provides likes data for posts")
+Container(commentsSystem, "Comments System", "", "Manages comment creation, retrieval, and deletion, and provides comment data for posts")
+
+Rel(client, loadBalancer, "")
+Rel(client, cdn, "Gets & uploads images via CDN")
+Rel(loadBalancer, postsSystem, "Get & create posts")
+Rel(loadBalancer, subscriptionsSystem, "Subscribe/unsubscribe from user")
+Rel(loadBalancer, likesSystem, "Like/unlike post")
+Rel(loadBalancer, commentsSystem, "Add, retrieve or delete comment")
+Rel(cdn, s3, "Gets & uploads images via S3")
+
+@enduml
