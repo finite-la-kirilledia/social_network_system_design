@@ -116,11 +116,11 @@
 
 ---
 
-## Disks evaluation for 1 year
+## Disks and hosts evaluation for 1 year
 
-### Posts
+### Posts (S3 + Postgres)
 
-#### Meta
+#### Meta (Postgres)
 
 * capacity = 5 KB/s * 86400 seconds/day * 365 days/year = 157680000 KB = 158 GB
 * traffic_per_second = 335 KB/s + 5 KB/s = 340 KB/s
@@ -144,9 +144,17 @@ SSD (nVME)
 * Disks_for_iops = iops / disk_iops = 1217 / 10k = 1 disk
 * Disks = max(1, 1, 1) = 1 disk
 
-_Decision: will take 2 SSD (SATA) disks by 500 GB_ 
+```
+Decision: will take 2 SSD (SATA) disks by 500 GB
 
-#### Media
+Replication: 3 RF, master-slave, async
+Sharding: Data will be sharded by userId across 2 hosts (shards)
+
+Hosts: 2 disks / 1 disk per host = 2 hosts
+Hosts_with_replication = 2 hosts * 3 RF = 6 hosts 
+```
+
+#### Media (S3)
 
 * capacity = 51 MB/s * 86400 seconds/day * 365 days/year = 1.6e9 MB = 1.6 PB
 * traffic_per_second = 335 KB/s + 5 KB/s = 340 KB/s
@@ -170,11 +178,29 @@ SSD (nVME)
 * Disks_for_iops = iops / disk_iops = 1217 / 10k = 1 disk
 * Disks = max(60, 1, 1) = 60 disks
 
-_Decision:
-for 30% of data (hot data) will take 6 SSD (DATA) disks by 100 TB.
-For 70% of data (cold data) will take 42 HDD by 32 TB_
+```
+Decision:
+ 
+for 30% of data (hot data) will take 6 SSD (DATA) disks by 100 TB
 
-### Comments
+Replication: 3 RF, master-slave, async
+Sharding: Data will be spreaded uniformly across 6 hosts 
+
+Hosts: 6 disks / 1 disk per host = 6 hosts
+Hosts_with_replication: 6 hosts * 3 RF = 18 hosts
+
+--------------------------------------------------------------------------------------------------------------------
+
+for 70% of data (cold data) will take 42 HDD by 32 TB
+
+Replication: 3 RF, master-slave, async
+Sharding: Data will be spreaded uniformly across 21 hosts
+
+Hosts: 42 disks / 2 disk per host = 21 hosts
+Hosts_with_replication = 21 hosts * 3 RF = 63 hosts 
+```
+
+### Comments (Postgres)
 
 * capacity = 9 KB/s * 86400 seconds/day * 365 days/year = 2.9e8 KB = 290 GB
 * traffic_per_second = 335 KB/s + 9 KB/s = 344 KB/s
@@ -198,9 +224,17 @@ SSD (nVME)
 * Disks_for_iops = iops / disk_iops = 1233 / 10k = 1 disk
 * Disks = max(1, 1, 1) = 1 disk
 
-_Decision: will take 2 SSD (SATA) disks by 500 GB_
+```
+Decision: will take 2 SSD (SATA) disks by 500 GB
 
-### Subscriptions
+Replication: 3 RF, master-slave, async
+Sharding: Data will be sharded by postId across 2 hosts (shards)
+
+Hosts: 2 disks / 1 disk per host = 2 hosts
+Hosts_with_replication = 2 hosts * 3 RF = 6 hosts
+```
+
+### Subscriptions (Postgres)
 
 * capacity = 1.9 KB/s * 86400 seconds/day * 365 days/year = 6e7 KB = 60 GB
 * traffic_per_second = 1.9 KB/s
@@ -224,9 +258,17 @@ SSD (nVME)
 * Disks_for_iops = iops / disk_iops = 116 / 10k = 1 disk
 * Disks = max(1, 1, 1) = 1 disk
 
-_Decision: will take 1 SSD (SATA) disk with 500 GB_
+```
+Decision: will take 1 SSD (SATA) disk with 500 GB
 
-### Likes
+Replication: 3 RF, master-slave, async
+Sharding: Will not use sharding since 1 SSD can handle 116 RPS and the data volume fits in 1 disk
+
+Hosts: 1 disk / 1 disk per host = 1 host
+Hosts_with_replication: 1 host * 3 RF = 3 hosts
+```
+
+### Likes (Postgres)
 
 * capacity = 9.3 KB/s * 86400 seconds/day * 365 days/year = 2.9e8 KB = 290 GB
 * traffic_per_second = 9.3 KB/s
@@ -250,4 +292,12 @@ SSD (nVME)
 * Disks_for_iops = iops / disk_iops = 580 / 10k = 1 disk
 * Disks = max(1, 1, 1) = 1 disk
 
-_Decision: will take 1 SSD (SATA) disk with 500 GB_
+```
+Decision: will take 1 SSD (SATA) disk with 500 GB
+
+Replication: 3 RF, master-slave, async
+Sharding: Will not use sharding since 1 SSD can handle 580 RPS and the data volume fits in 1 disk
+
+Hosts: 1 disk / 1 disk per host = 1 host
+Hosts_with_replication: 1 host * 3 RF = 3 hosts
+```
